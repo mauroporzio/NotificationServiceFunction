@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Azure.Storage.Queues.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
 
         }
 
-        public async Task<bool> ProcessAsync(string queueMessageJson)
+        public async Task<bool> ProcessAsync(QueueMessage queueMessage)
         {
             return true;
         }
