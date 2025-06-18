@@ -17,7 +17,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
         public async Task<bool> ProcessAsync(NotificationQueueMessage queueMessage)
         {
             var limitInfo = NotificationRateLimits.Limits[queueMessage.NotificationType];
-            var cutoffTime = queueMessage.TimestampUtc - limitInfo.Period;
+            var cutoffTime = queueMessage.Timestamp - limitInfo.Period;
 
             var recent = await _storage.GetRecentEventsAsync(queueMessage.Recipient, queueMessage.NotificationType, cutoffTime);
 
@@ -32,7 +32,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
                 PartitionKey = queueMessage.Recipient,
                 RowKey = Guid.NewGuid().ToString(),
                 NotificationType = queueMessage.NotificationType,
-                TimestampUtc = queueMessage.TimestampUtc,
+                TimestampUtc = queueMessage.Timestamp,
             };
 
             _logger.LogInformation($"Notification sent to {queueMessage.Recipient}: {queueMessage.Content}");
