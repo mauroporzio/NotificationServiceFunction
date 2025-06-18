@@ -8,9 +8,9 @@ namespace NotificationServiceFunction.Models
 {
     public class NotificationQueueMessage
     {
-        public string Recipient { get; set; }
-        public string NotificationType { get; set; }
+        public required string Recipient { get; set; }
+        public required string NotificationType { get; set; }
         public DateTime Timestamp { get; set; }
-        public string Content { get; set; }
+        public required string Content { get; set; }
     }
 }

@@ -5,10 +5,10 @@ namespace NotificationServiceFunction.Models
 {
     public class NotificationEvent : ITableEntity
     {
-        public string PartitionKey { get; set; } // recipient
-        public string RowKey { get; set; }  // unique ID
+        public required string PartitionKey { get; set; } // recipient
+        public required string RowKey { get; set; }  // unique ID
         public DateTime TimestampUtc { get; set; }
-        public string NotificationType { get; set; }
+        public required string NotificationType { get; set; }
 
         public ETag ETag { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
