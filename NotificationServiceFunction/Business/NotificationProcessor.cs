@@ -1,33 +1,30 @@
-using Azure.Storage.Queues.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NotificationServiceFunction.Business.Services.Interfaces;
+using NotificationServiceFunction.Models;
 
 namespace NotificationServiceFunction.Business
 {
     public class NotificationProcessor
     {
         private readonly ILogger<NotificationProcessor> _logger;
-        private readonly NotificationService _notificationService;
+        private readonly INotificationService _notificationService;
 
-        public NotificationProcessor(ILogger<NotificationProcessor> logger)
+        public NotificationProcessor(ILogger<NotificationProcessor> logger, INotificationService notificationService)
         {
             _logger = logger;
-            _notificationService = new NotificationService();
+            _notificationService = notificationService;
         }
 
         [Function(nameof(NotificationProcessor))]
-        public async Task Run([QueueTrigger("notificationsQueue", Connection = "StorageConnection")] QueueMessage queueItem)
+        public async Task Run([QueueTrigger("notificationsqueue", Connection = "StorageConnection")] NotificationQueueMessage queueItem)
         {
             _logger.LogInformation($"Received message: {queueItem}");
 
             try
             {
-                var success = await _notificationService.ProcessAsync(queueItem);
-                if (!success)
-                {
+                if (!await _notificationService.ProcessAsync(queueItem))
                     _logger.LogWarning("Notification dropped due to rate limiting.");
-                }
             }
             catch (Exception ex)
             {
