@@ -17,7 +17,7 @@ namespace NotificationServiceFunction.Business
         }
 
         [Function(nameof(NotificationProcessor))]
-        public async Task Run([QueueTrigger("notificationsqueue", Connection = "StorageConnection")] NotificationQueueMessage queueItem)
+        public async Task Run([QueueTrigger("notificationsqueue", Connection = "AzureWebJobsStorage")] NotificationQueueMessage queueItem)
         {
             _logger.LogInformation($"Received message: {queueItem}");
 

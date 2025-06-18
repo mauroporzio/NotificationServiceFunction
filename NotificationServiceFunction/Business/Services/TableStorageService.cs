@@ -1,6 +1,8 @@
 ﻿using Azure.Data.Tables;
+using Microsoft.Extensions.Options;
 using NotificationServiceFunction.Business.Services.Interfaces;
 using NotificationServiceFunction.Models;
+using NotificationServiceFunction.Models.Config;
 
 namespace NotificationServiceFunction.Business.Services
 {
@@ -8,10 +10,10 @@ namespace NotificationServiceFunction.Business.Services
     {
         private readonly TableClient _tableClient;
 
-        public TableStorageService()
+        public TableStorageService(IOptions<TableStorageSettings> options)
         {
-            var connectionString = "";
-            var tableName = "";
+            var connectionString = options.Value.ConnectionString;
+            var tableName = options.Value.TableName;
 
             _tableClient = new TableClient(connectionString, tableName);
             _tableClient.CreateIfNotExists();
