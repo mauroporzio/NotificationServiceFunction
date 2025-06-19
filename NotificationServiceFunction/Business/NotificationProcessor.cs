@@ -23,8 +23,9 @@ namespace NotificationServiceFunction.Business
 
             try
             {
-                if (!await _notificationService.ProcessAsync(queueItem))
-                    _logger.LogWarning("Notification dropped due to rate limiting.");
+                var result = await _notificationService.ProcessAsync(queueItem);
+                if (!result.IsValid)
+                    _logger.LogWarning(result.ErrorMessage);
             }
             catch (Exception ex)
             {

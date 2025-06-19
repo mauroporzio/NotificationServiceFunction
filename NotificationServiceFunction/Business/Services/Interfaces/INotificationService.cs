@@ -5,6 +5,6 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
 {
     public interface INotificationService
     {
-        Task<bool> ProcessAsync(NotificationQueueMessage queueMessage);
+        Task<(bool IsValid, string? ErrorMessage)> ProcessAsync(NotificationQueueMessage queueMessage);
     }
 }

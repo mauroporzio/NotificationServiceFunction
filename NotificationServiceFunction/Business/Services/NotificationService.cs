@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Azure.Storage.Queues.Models;
+using Microsoft.Extensions.Logging;
 using NotificationServiceFunction.Business.Extensions;
 using NotificationServiceFunction.Business.Helper;
 using NotificationServiceFunction.Models;
@@ -19,14 +20,18 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
             _blob = blob;
         }
 
-        public async Task<bool> ProcessAsync(NotificationQueueMessage queueMessage)
+        public async Task<(bool IsValid, string? ErrorMessage)> ProcessAsync(NotificationQueueMessage queueMessage)
         {
-            var currentTime = DateTime.UtcNow;
-            var notificationType = EnumExtensions.FromDescription<NotificationTypesEnum>(queueMessage.NotificationType);
-            var limitInfo = await GetNotificationRateLimit(notificationType.GetDescription());
+            var notificationsRateLimits = await _blob.GetRulesAsync();
 
-            if(limitInfo != null)
+            var validationResult = ValidateQueueMessage(queueMessage, notificationsRateLimits);
+
+            if(validationResult.IsValid)
             {
+                var notificationType = EnumExtensions.FromDescription<NotificationTypesEnum>(queueMessage.NotificationType);
+                var limitInfo = GetNotificationRateLimit(notificationsRateLimits, notificationType.GetDescription());
+
+                var currentTime = DateTime.UtcNow;
                 var timeSpan = TimeSpanHelper.GetTimeSpan(limitInfo.TimeType, limitInfo.TimeAmount);
                 var cutoffTime = currentTime - timeSpan;
 
@@ -34,8 +39,9 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
 
                 if (recent != null && recent.Count() >= limitInfo.RateLimit)
                 {
-                    _logger.LogError($"Rate limit exceeded for {queueMessage.Recipient} - {notificationType.GetDescription()}");
-                    return false;
+                    var errorMessage = $"Rate limit exceeded for {queueMessage.Recipient} - {notificationType.GetDescription()}";
+                    _logger.LogError(errorMessage);
+                    return (false, errorMessage);
                 }
 
                 var ev = new NotificationEvent
@@ -49,21 +55,41 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
                 };
 
                 _logger.LogInformation($"Notification sent to {queueMessage.Recipient}: {queueMessage.Content}");
-
                 await _storage.StoreEventAsync(ev);
 
-                return true;
+                return (true, null);
             }
-
-            _logger.LogError($"Rate limit not found for {notificationType.GetDescription()}");
-            return false;
+            return (false, validationResult.ErrorMessage);
         }
 
-        private async Task<NotificationRateLimit?> GetNotificationRateLimit(string notificationType)
+        private (bool IsValid, string ErrorMessage) ValidateQueueMessage(NotificationQueueMessage queueMessage, List<NotificationRateLimit>? notificationsRateLimits)
         {
-            var notificationsRateLimitis = await _blob.GetRulesAsync();
+            bool isValid = true;
+            string errorMessage = string.Empty;
 
-            return notificationsRateLimitis?.FirstOrDefault(x => x.NotificationType == notificationType);
+            try
+            {
+                //Validate that NotificationType exists and is supported.
+                EnumExtensions.FromDescription<NotificationTypesEnum>(queueMessage.NotificationType);
+
+                //Validate that the time rate configuration for the notification type exists.
+                var timeSpan = GetNotificationRateLimit(notificationsRateLimits, queueMessage.NotificationType);
+
+                //Validate that timeSpan exists and is supported.
+                EnumExtensions.FromDescription<TimeSpansEnum>(timeSpan!.TimeType);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+            }
+
+            return (isValid, errorMessage);
+        }
+
+        private NotificationRateLimit GetNotificationRateLimit(List<NotificationRateLimit>? notificationsRateLimits, string notificationType)
+        {
+            return notificationsRateLimits?.FirstOrDefault(x => x.NotificationType == notificationType) ??
+                   throw new Exception($"No matching timeSpan configuration found for notifitcation type: '{notificationType}', nameof(description)");
         }
     }
 }
