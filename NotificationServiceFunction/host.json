@@ -1,5 +1,8 @@
 {
   "version": "2.0",
+  "concurrency": {
+    "dynamicConcurrencyEnabled": false
+  },
   "extensions": {
     "queues": {
       "batchSize": 1,

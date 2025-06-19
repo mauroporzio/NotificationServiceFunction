@@ -1,4 +1,5 @@
 using Microsoft.Azure.Functions.Worker.Builder;
+using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NotificationServiceFunction.Business.Services;
@@ -16,6 +17,14 @@ builder.Services.Configure<TableStorageSettings>(
 
 builder.Services.Configure<BlobStorageSettings>(
     builder.Configuration.GetSection("NotificationRateLimitsBlobStorage"));
+
+builder.Services.Configure<QueuesOptions>(options =>
+{
+    options.MaxPollingInterval = TimeSpan.FromSeconds(1);
+    options.BatchSize = 1;
+    options.MaxDequeueCount = 5;
+    options.VisibilityTimeout = TimeSpan.FromMinutes(5);
+});
 
 builder.ConfigureFunctionsWebApplication();
 
