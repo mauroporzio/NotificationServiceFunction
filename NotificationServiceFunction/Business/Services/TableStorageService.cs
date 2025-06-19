@@ -27,7 +27,7 @@ namespace NotificationServiceFunction.Business.Services
             var filter = TableClient.CreateQueryFilter<NotificationEvent>(e =>
                 e.PartitionKey == recipient &&
                 e.NotificationType == type &&
-                e.TimestampUtc >= cutoffTime &&
+                e.Timestamp >= cutoffTime &&
                 e.Status == (int)NotificationStatusEnum.Pending);
 
             var result = _tableClient.QueryAsync<NotificationEvent>(filter);

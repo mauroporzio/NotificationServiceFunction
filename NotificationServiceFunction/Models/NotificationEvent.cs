@@ -7,7 +7,6 @@ namespace NotificationServiceFunction.Models
     {
         public required string PartitionKey { get; set; } // recipient
         public required string RowKey { get; set; }  // unique ID
-        public DateTime TimestampUtc { get; set; }
         public required string NotificationType { get; set; }
         public required string Content { get; set; }
         public required int Status { get; set; }

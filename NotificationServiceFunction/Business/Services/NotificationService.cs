@@ -21,13 +21,14 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
 
         public async Task<bool> ProcessAsync(NotificationQueueMessage queueMessage)
         {
+            var currentTime = DateTime.UtcNow;
             var notificationType = EnumExtensions.FromDescription<NotificationTypesEnum>(queueMessage.NotificationType);
-
             var limitInfo = await GetNotificationRateLimit(notificationType.GetDescription());
+
             if(limitInfo != null)
             {
                 var timeSpan = TimeSpanHelper.GetTimeSpan(limitInfo.TimeType, limitInfo.TimeAmount);
-                var cutoffTime = queueMessage.Timestamp - timeSpan;
+                var cutoffTime = currentTime - timeSpan;
 
                 var recent = await _storage.GetRecentEventsAsync(queueMessage.Recipient, notificationType.GetDescription(), cutoffTime);
 
@@ -42,7 +43,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
                     PartitionKey = queueMessage.Recipient,
                     RowKey = Guid.NewGuid().ToString(),
                     NotificationType = notificationType.GetDescription(),
-                    TimestampUtc = queueMessage.Timestamp,
+                    Timestamp = currentTime,
                     Content = queueMessage.Content,
                     Status = (int)NotificationStatusEnum.Pending
                 };
