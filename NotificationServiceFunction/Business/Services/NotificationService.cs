@@ -75,6 +75,29 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
             return result;
         }
 
+        /// <summary>
+        /// Validates the contents of a <see cref="NotificationQueueMessage"/> against supported notification types
+        /// and rate limit configuration rules.
+        /// </summary>
+        /// <param name="queueMessage">The message to validate, containing type and recipient information.</param>
+        /// <param name="notificationsRateLimits">The list of configured rate limits used for validation. May be null.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// <list type="bullet">
+        /// <item><term><c>IsValid</c></term><description>True if the message passed all validations; otherwise, false.</description></item>
+        /// <item><term><c>ErrorMessage</c></term><description>An error message describing the validation failure, or empty if valid.</description></item>
+        /// </list>
+        /// </returns>
+        /// <remarks>
+        /// The method performs three validations:
+        /// <list type="number">
+        /// <item>That the notification type is recognized by the <see cref="NotificationTypesEnum"/>.</item>
+        /// <item>That a rate limit rule exists for the given notification type.</item>
+        /// <item>That the time span type in the rule is supported by the system.</item>
+        /// </list>
+        /// If any of these checks fail, the method returns <c>IsValid = false</c> with an appropriate <c>ErrorMessage</c>.
+        /// </remarks>
+
         private (bool IsValid, string ErrorMessage) ValidateQueueMessage(NotificationQueueMessage queueMessage, List<NotificationRateLimit>? notificationsRateLimits)
         {
             bool isValid = true;
@@ -99,6 +122,22 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
 
             return (isValid, errorMessage);
         }
+
+        /// <summary>
+        /// Retrieves the rate limit configuration for a given notification type from the provided list of rate limits.
+        /// </summary>
+        /// <param name="notificationsRateLimits">The list of available rate limit rules. May be null.</param>
+        /// <param name="notificationType">The notification type to search for in the rate limit configuration.</param>
+        /// <returns>
+        /// The <see cref="NotificationRateLimit"/> that matches the given notification type.
+        /// </returns>
+        /// <exception cref="Exception">
+        /// Thrown when no matching configuration is found for the specified <paramref name="notificationType"/>.
+        /// </exception>
+        /// <remarks>
+        /// This method uses <c>FirstOrDefault</c> to locate a matching <see cref="NotificationRateLimit"/> based on
+        /// the <c>NotificationType</c> field. If no match is found, it throws an exception with a descriptive message.
+        /// </remarks>
 
         private NotificationRateLimit GetNotificationRateLimit(List<NotificationRateLimit>? notificationsRateLimits, string notificationType)
         {
