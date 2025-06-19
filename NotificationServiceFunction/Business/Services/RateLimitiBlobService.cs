@@ -19,11 +19,16 @@ namespace NotificationServiceFunction.Business.Services
             _blobClient = containerClient.GetBlobClient(options.Value.BlobName);
         }
 
-        public async Task<List<NotificationRateLimit>?> GetRulesAsync()
+        public async Task<List<NotificationRateLimit>> GetRulesAsync()
         {
             var download = await _blobClient.DownloadContentAsync();
             var json = download.Value.Content.ToString();
-            return JsonSerializer.Deserialize<List<NotificationRateLimit>>(json);
+            var rules = JsonSerializer.Deserialize<List<NotificationRateLimit>>(json);
+
+            if (rules == null)
+                throw new InvalidOperationException("Failed to deserialize notification rate limit rules from blob content.");
+
+            return rules;
         }
     }
 }

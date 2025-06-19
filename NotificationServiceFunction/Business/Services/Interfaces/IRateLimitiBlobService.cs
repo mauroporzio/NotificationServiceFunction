@@ -4,6 +4,6 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
 {
     public interface IRateLimitiBlobService
     {
-        Task<List<NotificationRateLimit>?> GetRulesAsync();
+        Task<List<NotificationRateLimit>> GetRulesAsync();
     }
 }
