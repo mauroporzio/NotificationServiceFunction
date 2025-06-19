@@ -23,7 +23,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
             var limitInfo = await GetNotificationRateLimit(queueMessage.NotificationType);
             if(limitInfo != null)
             {
-                var timeSpan = TimeSpanHelper.GetTimeSpan(limitInfo.TimeType);
+                var timeSpan = TimeSpanHelper.GetTimeSpan(limitInfo.TimeType, limitInfo.TimeAmount);
                 var cutoffTime = queueMessage.Timestamp - timeSpan;
 
                 var recent = await _storage.GetRecentEventsAsync(queueMessage.Recipient, queueMessage.NotificationType, cutoffTime);

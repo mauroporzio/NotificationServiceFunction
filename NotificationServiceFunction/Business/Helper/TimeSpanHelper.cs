@@ -9,16 +9,16 @@ namespace NotificationServiceFunction.Business.Helper
 {
     public static class TimeSpanHelper
     {
-        public static TimeSpan GetTimeSpan(string timeSpanType)
+        public static TimeSpan GetTimeSpan(string timeSpanType, int timeAmount)
         {
             switch(timeSpanType)
             {
                 case TimeSpanConstants.FromMinutes:
-                    return TimeSpan.FromMinutes(1);
+                    return TimeSpan.FromMinutes(timeAmount);
                 case TimeSpanConstants.FromHours:
-                    return TimeSpan.FromHours(1);
+                    return TimeSpan.FromHours(timeAmount);
                 case TimeSpanConstants.FromDays:
-                    return TimeSpan.FromDays(1);
+                    return TimeSpan.FromDays(timeAmount);
                  default:
                     return TimeSpan.Zero;
             }
