@@ -10,6 +10,7 @@ namespace NotificationServiceFunction.Models
         public required string NotificationType { get; set; }
         public required string Content { get; set; }
         public required int Status { get; set; }
+        public required string StatusDescription { get; set; }
 
         public ETag ETag { get; set; }
         public DateTimeOffset? Timestamp { get; set; }

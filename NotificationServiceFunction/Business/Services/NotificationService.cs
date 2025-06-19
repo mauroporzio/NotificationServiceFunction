@@ -54,7 +54,8 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
                         NotificationType = notificationType.GetDescription(),
                         Timestamp = currentTime,
                         Content = queueMessage.Content,
-                        Status = (int)NotificationStatusEnum.Pending
+                        Status = (int)NotificationStatusEnum.Pending,
+                        StatusDescription = NotificationStatusEnum.Pending.GetDescription()
                     };
 
                     await _storage.StoreEventAsync(ev);
