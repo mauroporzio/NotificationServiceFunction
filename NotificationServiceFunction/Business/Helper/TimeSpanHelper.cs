@@ -1,5 +1,4 @@
-﻿using NotificationServiceFunction.Business.Extensions;
-using NotificationServiceFunction.Models.Enums;
+﻿using System.Reflection;
 
 namespace NotificationServiceFunction.Business.Helper
 {
@@ -7,19 +6,19 @@ namespace NotificationServiceFunction.Business.Helper
     {
         public static TimeSpan GetTimeSpan(string timeSpanType, int timeAmount)
         {
-            TimeSpansEnum spanEnum = EnumExtensions.FromDescription<TimeSpansEnum>(timeSpanType);
+            // Build method name.
+            string methodName = $"From{timeSpanType}";
 
-            switch (spanEnum)
-            {
-                case TimeSpansEnum.FromMinutes:
-                    return TimeSpan.FromMinutes(timeAmount);
-                case TimeSpansEnum.FromHours:
-                    return TimeSpan.FromHours(timeAmount);
-                case TimeSpansEnum.FromDays:
-                    return TimeSpan.FromDays(timeAmount);
-                 default:
-                    throw new Exception($"No matching TimeSpan handling found for type: '{timeSpanType}'.");
-            }
+            // Get the static method from TimeSpan that matches the name
+            MethodInfo? method = typeof(TimeSpan).GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
+
+            if (method == null)
+                throw new ArgumentException($"Invalid time span type: {timeSpanType}");
+
+            // Call the method with the timeAmount
+            object? result = method.Invoke(null, new object[] { Convert.ToDouble(timeAmount) });
+
+            return (TimeSpan)result!;
         }
     }
 }

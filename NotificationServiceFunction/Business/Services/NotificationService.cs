@@ -2,6 +2,7 @@
 using NotificationServiceFunction.Business.Extensions;
 using NotificationServiceFunction.Business.Helper;
 using NotificationServiceFunction.Models;
+using NotificationServiceFunction.Models.Constants;
 using NotificationServiceFunction.Models.Enums;
 
 namespace NotificationServiceFunction.Business.Services.Interfaces
@@ -88,7 +89,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
                 var timeSpan = GetNotificationRateLimit(notificationsRateLimits, queueMessage.NotificationType);
 
                 //Validate that timeSpan exists and is supported.
-                EnumExtensions.FromDescription<TimeSpansEnum>(timeSpan!.TimeType);
+                TimeSpanTypesConstants.IsValidTimeSpanType(timeSpan.TimeType);
             }
             catch (Exception ex)
             {
