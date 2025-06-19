@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using NotificationServiceFunction.Business.Services.Interfaces;
 using NotificationServiceFunction.Models;
 using NotificationServiceFunction.Models.Config;
-using System.Data;
 using System.Text.Json;
 
 namespace NotificationServiceFunction.Business.Services
