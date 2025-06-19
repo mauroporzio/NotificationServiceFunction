@@ -6,6 +6,11 @@
 
     // Table Storage
     "NotificationEventsTable__ConnectionString": "UseDevelopmentStorage=true",
-    "NotificationEventsTable__TableName": "NotificationEvents"
+    "NotificationEventsTable__TableName": "NotificationEvents",
+
+    // Blob Storage
+    "NotificationRateLimitsBlobStorage__ConnectionString": "UseDevelopmentStorage=true",
+    "NotificationRateLimitsBlobStorage__ContainerName": "notifications-function-configs",
+    "NotificationRateLimitsBlobStorage__BlobName": "notificationRateLimitsConfig.json"
   }
 }

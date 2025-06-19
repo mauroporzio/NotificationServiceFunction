@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NotificationServiceFunction.Business.Helper;
 using NotificationServiceFunction.Models;
 
 namespace NotificationServiceFunction.Business.Services.Interfaces
@@ -7,39 +8,56 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
     {
         private readonly ILogger<NotificationService> _logger;
         private readonly ITableStorageService _storage;
+        private readonly IRateLimitiBlobService _blob;
 
-        public NotificationService(ILogger<NotificationService>  logger, ITableStorageService storage)
+        public NotificationService(ILogger<NotificationService>  logger, ITableStorageService storage, IRateLimitiBlobService blob)
         {
             _logger = logger;
             _storage = storage;
+            _blob = blob;
         }
 
         public async Task<bool> ProcessAsync(NotificationQueueMessage queueMessage)
         {
-            var limitInfo = NotificationRateLimits.Limits[queueMessage.NotificationType];
-            var cutoffTime = queueMessage.Timestamp - limitInfo.Period;
-
-            var recent = await _storage.GetRecentEventsAsync(queueMessage.Recipient, queueMessage.NotificationType, cutoffTime);
-
-            if (recent is not null && recent.Count() >= limitInfo.Limit)
+            var limitInfo = await GetNotificationRateLimit(queueMessage.NotificationType);
+            if(limitInfo != null)
             {
-                _logger.LogError($"Rate limit exceeded for {queueMessage.Recipient} - {queueMessage.NotificationType}");
-                return false;
+                var timeSpan = TimeSpanHelper.GetTimeSpan(limitInfo.TimeType);
+                var cutoffTime = queueMessage.Timestamp - timeSpan;
+
+                var recent = await _storage.GetRecentEventsAsync(queueMessage.Recipient, queueMessage.NotificationType, cutoffTime);
+
+                if (recent != null && recent.Count() >= limitInfo.RateLimit)
+                {
+                    _logger.LogError($"Rate limit exceeded for {queueMessage.Recipient} - {queueMessage.NotificationType}");
+                    return false;
+                }
+
+                var ev = new NotificationEvent
+                {
+                    PartitionKey = queueMessage.Recipient,
+                    RowKey = Guid.NewGuid().ToString(),
+                    NotificationType = queueMessage.NotificationType,
+                    TimestampUtc = queueMessage.Timestamp,
+                    Content = queueMessage.Content
+                };
+
+                _logger.LogInformation($"Notification sent to {queueMessage.Recipient}: {queueMessage.Content}");
+
+                await _storage.StoreEventAsync(ev);
+
+                return true;
             }
 
-            var ev = new NotificationEvent
-            {
-                PartitionKey = queueMessage.Recipient,
-                RowKey = Guid.NewGuid().ToString(),
-                NotificationType = queueMessage.NotificationType,
-                TimestampUtc = queueMessage.Timestamp,
-            };
+            _logger.LogError($"Rate limit not found for {queueMessage.NotificationType}");
+            return false;
+        }
 
-            _logger.LogInformation($"Notification sent to {queueMessage.Recipient}: {queueMessage.Content}");
+        private async Task<NotificationRateLimit?> GetNotificationRateLimit(string notificationType)
+        {
+            var notificationsRateLimitis = await _blob.GetRulesAsync();
 
-            await _storage.StoreEventAsync(ev);
-
-            return true;
+            return notificationsRateLimitis?.FirstOrDefault(x => x.NotificationType == notificationType);
         }
     }
 }

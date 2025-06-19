@@ -9,9 +9,13 @@ var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ITableStorageService, TableStorageService>();
+builder.Services.AddScoped<IRateLimitiBlobService, RateLimitiBlobService>();
 
 builder.Services.Configure<TableStorageSettings>(
     builder.Configuration.GetSection("NotificationEventsTable"));
+
+builder.Services.Configure<BlobStorageSettings>(
+    builder.Configuration.GetSection("NotificationRateLimitsBlobStorage"));
 
 builder.ConfigureFunctionsWebApplication();
 

@@ -12,5 +12,10 @@ namespace NotificationServiceFunction.Models
         public required string NotificationType { get; set; }
         public DateTime Timestamp { get; set; }
         public required string Content { get; set; }
+
+        public override string ToString()
+        {
+            return $"Recipient: '{this.Recipient}', NotificationType: '{this.NotificationType}', TimeStamp: '{this.Timestamp}', Content: '{this.Content}'";
+        }
     }
 }

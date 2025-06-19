@@ -9,6 +9,7 @@ namespace NotificationServiceFunction.Models
         public required string RowKey { get; set; }  // unique ID
         public DateTime TimestampUtc { get; set; }
         public required string NotificationType { get; set; }
+        public required string Content { get; set; }
 
         public ETag ETag { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
