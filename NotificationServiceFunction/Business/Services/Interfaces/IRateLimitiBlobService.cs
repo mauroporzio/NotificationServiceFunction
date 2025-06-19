@@ -20,7 +20,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
         /// This method retrieves the blob content as a string and attempts to deserialize it into a list of <see cref="NotificationRateLimit"/>.
         /// If deserialization fails, an <see cref="InvalidOperationException"/> is thrown.
         /// </remarks>
-        
+
         Task<List<NotificationRateLimit>> GetRulesAsync();
     }
 }

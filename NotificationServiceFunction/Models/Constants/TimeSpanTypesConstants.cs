@@ -27,7 +27,7 @@ namespace NotificationServiceFunction.Models.Constants
 
         public static void IsValidTimeSpanType(string timeSpanType)
         {
-            if(!typeof(TimeSpanTypesConstants).GetFields(BindingFlags.Public | BindingFlags.Static).Any(f => f.Name.Equals(timeSpanType, StringComparison.OrdinalIgnoreCase)))
+            if (!typeof(TimeSpanTypesConstants).GetFields(BindingFlags.Public | BindingFlags.Static).Any(f => f.Name.Equals(timeSpanType, StringComparison.OrdinalIgnoreCase)))
                 throw new Exception($"No matching TimeSpanType found for: {timeSpanType}");
         }
     }

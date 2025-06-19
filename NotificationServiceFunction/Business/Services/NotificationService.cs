@@ -14,7 +14,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
         private readonly IRateLimitiBlobService _blob;
         private readonly IRejectedNotificationQueueService _rejectedNotificationQueueService;
 
-        public NotificationService(ILogger<NotificationService>  logger, ITableStorageService storage, IRateLimitiBlobService blob, IRejectedNotificationQueueService rejectedNotificationQueueService)
+        public NotificationService(ILogger<NotificationService> logger, ITableStorageService storage, IRateLimitiBlobService blob, IRejectedNotificationQueueService rejectedNotificationQueueService)
         {
             _logger = logger;
             _storage = storage;
@@ -30,7 +30,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
 
             var validationResult = ValidateQueueMessage(queueMessage, notificationsRateLimits);
 
-            if(validationResult.IsValid)
+            if (validationResult.IsValid)
             {
                 var notificationType = EnumExtensions.FromDescription<NotificationTypesEnum>(queueMessage.NotificationType);
                 var limitInfo = GetNotificationRateLimit(notificationsRateLimits, notificationType.GetDescription());
@@ -44,7 +44,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
                 if (recent != null && recent.Count() >= limitInfo.RateLimit)
                 {
                     result = (false, $"Rate limit exceeded for {queueMessage.Recipient} - {notificationType.GetDescription()}");
-                } 
+                }
                 else
                 {
                     var ev = new NotificationEvent
@@ -69,8 +69,8 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
             {
                 result = (false, validationResult.ErrorMessage);
             }
-                
-            if(!result.IsValid)
+
+            if (!result.IsValid)
                 await _rejectedNotificationQueueService.Enqueue(queueMessage, result.ErrorMessage);
 
             return result;

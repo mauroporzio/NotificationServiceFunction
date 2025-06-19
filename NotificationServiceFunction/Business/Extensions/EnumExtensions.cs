@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Reflection;
 namespace NotificationServiceFunction.Business.Extensions
 {
@@ -51,7 +50,7 @@ namespace NotificationServiceFunction.Business.Extensions
         /// <remarks>
         /// This method uses reflection to inspect the <see cref="DescriptionAttribute"/> applied to the enum member.
         /// </remarks>
-        
+
         public static string GetDescription(this Enum value)
         {
             return value.GetType()

@@ -12,7 +12,7 @@ namespace NotificationServiceFunction.Business.Helper
         /// <param name="timeAmount">The numeric value for the specified time span type.</param>
         /// <returns>A <see cref="TimeSpan"/> representing the given amount and type.</returns>
         /// <exception cref="ArgumentException">Thrown when the provided type is invalid.</exception>
-        
+
         public static TimeSpan GetTimeSpan(string timeSpanType, int timeAmount)
         {
             // Build method name.

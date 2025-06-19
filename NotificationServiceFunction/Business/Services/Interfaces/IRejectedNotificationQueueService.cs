@@ -19,7 +19,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
         /// <exception cref="Azure.RequestFailedException">
         /// Thrown if the queue message fails to send due to storage issues such as connectivity or authorization errors.
         /// </exception>
-        
+
         Task Enqueue(NotificationQueueMessage notificationQueueMessage, string? reason);
     }
 }

@@ -33,7 +33,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
         /// <exception cref="Azure.RequestFailedException">
         /// Thrown if the operation fails due to storage-related issues such as connectivity, conflicts, or permissions.
         /// </exception>
-        
+
         Task StoreEventAsync(NotificationEvent notificationEvent);
     }
 }

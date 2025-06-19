@@ -33,7 +33,7 @@ namespace NotificationServiceFunction.Business
         /// Any unhandled exception during processing is logged and rethrown to ensure Azure Functions
         /// retries the message or places it into the poison queue.
         /// </exception>
-        
+
         [Function(nameof(NotificationProcessor))]
         public async Task Run([QueueTrigger("notificationsqueue", Connection = "AzureWebJobsStorage")] NotificationQueueMessage queueItem)
         {
@@ -51,7 +51,7 @@ namespace NotificationServiceFunction.Business
             catch (Exception ex)
             {
                 _logger.LogError($"Processing failed: {ex.Message}");
-                throw; //Re throw exception to insert message into posion queue.
+                throw; //Re throw exception to insert message into poison queue.
             }
         }
     }

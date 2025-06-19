@@ -216,7 +216,7 @@ namespace NotificationServiceFunction.UnitTests.Tests.ServiceTests
                         TimeType = "OtherTimeType", //Invalid
                         TimeAmount = 1
                     }
-                }; 
+                };
 
                 var expectedErrorMessage = $"No matching TimeSpanType found for";
 

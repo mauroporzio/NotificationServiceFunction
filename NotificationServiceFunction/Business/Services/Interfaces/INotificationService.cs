@@ -22,7 +22,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
         /// If the rate limit is exceeded, the message is not stored and is sent to the rejected queue.
         /// </remarks>
         /// <exception cref="Exception">Throws if underlying blob or table storage operations fail unexpectedly.</exception>
-        
+
         Task<(bool IsValid, string? ErrorMessage)> ProcessAsync(NotificationQueueMessage queueMessage);
     }
 }
