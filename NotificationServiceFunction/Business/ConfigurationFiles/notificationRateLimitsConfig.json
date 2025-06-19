@@ -1,0 +1,20 @@
+[
+  {
+    "NotificationType": "Status",
+    "RateLimit": 2,
+    "TimeType": "Minutes",
+	"TimeAmount": 1
+  },
+  {
+    "NotificationType": "News",
+    "RateLimit": 1,
+    "TimeType": "Hours",
+	"TimeAmount": 1
+  },
+  {
+    "NotificationType": "Marketing",
+    "RateLimit": 3,
+    "TimeType": "Days",
+	"TimeAmount": 1
+  }
+]
