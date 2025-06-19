@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using NotificationServiceFunction.Business.Services.Interfaces;
 using NotificationServiceFunction.Models;
 using NotificationServiceFunction.Models.Config;
+using NotificationServiceFunction.Models.Enum;
 
 namespace NotificationServiceFunction.Business.Services
 {
@@ -26,7 +27,8 @@ namespace NotificationServiceFunction.Business.Services
             var filter = TableClient.CreateQueryFilter<NotificationEvent>(e =>
                 e.PartitionKey == recipient &&
                 e.NotificationType == type &&
-                e.TimestampUtc >= cutoffTime);
+                e.TimestampUtc >= cutoffTime &&
+                e.Status == (int)NotificationStatusEnum.Pending);
 
             var result = _tableClient.QueryAsync<NotificationEvent>(filter);
 

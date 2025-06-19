@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NotificationServiceFunction.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,11 +13,11 @@ namespace NotificationServiceFunction.Business.Helper
         {
             switch(timeSpanType)
             {
-                case "Minutes":
+                case TimeSpanConstants.FromMinutes:
                     return TimeSpan.FromMinutes(1);
-                case "Hours":
+                case TimeSpanConstants.FromHours:
                     return TimeSpan.FromHours(1);
-                case "Days":
+                case TimeSpanConstants.FromDays:
                     return TimeSpan.FromDays(1);
                  default:
                     return TimeSpan.Zero;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NotificationServiceFunction.Business.Helper;
 using NotificationServiceFunction.Models;
+using NotificationServiceFunction.Models.Enum;
 
 namespace NotificationServiceFunction.Business.Services.Interfaces
 {
@@ -39,7 +40,8 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
                     RowKey = Guid.NewGuid().ToString(),
                     NotificationType = queueMessage.NotificationType,
                     TimestampUtc = queueMessage.Timestamp,
-                    Content = queueMessage.Content
+                    Content = queueMessage.Content,
+                    Status = (int)NotificationStatusEnum.Pending
                 };
 
                 _logger.LogInformation($"Notification sent to {queueMessage.Recipient}: {queueMessage.Content}");
