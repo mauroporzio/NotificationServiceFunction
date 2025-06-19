@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using NotificationServiceFunction.Business.Extensions;
 using NotificationServiceFunction.Business.Helper;
 using NotificationServiceFunction.Models;
-using NotificationServiceFunction.Models.Enum;
+using NotificationServiceFunction.Models.Enums;
 
 namespace NotificationServiceFunction.Business.Services.Interfaces
 {
@@ -20,17 +21,19 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
 
         public async Task<bool> ProcessAsync(NotificationQueueMessage queueMessage)
         {
-            var limitInfo = await GetNotificationRateLimit(queueMessage.NotificationType);
+            var notificationType = EnumExtensions.FromDescription<NotificationTypesEnum>(queueMessage.NotificationType);
+
+            var limitInfo = await GetNotificationRateLimit(notificationType.GetDescription());
             if(limitInfo != null)
             {
                 var timeSpan = TimeSpanHelper.GetTimeSpan(limitInfo.TimeType, limitInfo.TimeAmount);
                 var cutoffTime = queueMessage.Timestamp - timeSpan;
 
-                var recent = await _storage.GetRecentEventsAsync(queueMessage.Recipient, queueMessage.NotificationType, cutoffTime);
+                var recent = await _storage.GetRecentEventsAsync(queueMessage.Recipient, notificationType.GetDescription(), cutoffTime);
 
                 if (recent != null && recent.Count() >= limitInfo.RateLimit)
                 {
-                    _logger.LogError($"Rate limit exceeded for {queueMessage.Recipient} - {queueMessage.NotificationType}");
+                    _logger.LogError($"Rate limit exceeded for {queueMessage.Recipient} - {notificationType.GetDescription()}");
                     return false;
                 }
 
@@ -38,7 +41,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
                 {
                     PartitionKey = queueMessage.Recipient,
                     RowKey = Guid.NewGuid().ToString(),
-                    NotificationType = queueMessage.NotificationType,
+                    NotificationType = notificationType.GetDescription(),
                     TimestampUtc = queueMessage.Timestamp,
                     Content = queueMessage.Content,
                     Status = (int)NotificationStatusEnum.Pending
@@ -51,7 +54,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
                 return true;
             }
 
-            _logger.LogError($"Rate limit not found for {queueMessage.NotificationType}");
+            _logger.LogError($"Rate limit not found for {notificationType.GetDescription()}");
             return false;
         }
 

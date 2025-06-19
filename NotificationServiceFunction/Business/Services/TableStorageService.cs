@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using NotificationServiceFunction.Business.Services.Interfaces;
 using NotificationServiceFunction.Models;
 using NotificationServiceFunction.Models.Config;
-using NotificationServiceFunction.Models.Enum;
+using NotificationServiceFunction.Models.Enums;
 
 namespace NotificationServiceFunction.Business.Services
 {

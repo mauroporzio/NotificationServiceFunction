@@ -1,9 +1,5 @@
-﻿using NotificationServiceFunction.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NotificationServiceFunction.Business.Extensions;
+using NotificationServiceFunction.Models.Enums;
 
 namespace NotificationServiceFunction.Business.Helper
 {
@@ -11,13 +7,15 @@ namespace NotificationServiceFunction.Business.Helper
     {
         public static TimeSpan GetTimeSpan(string timeSpanType, int timeAmount)
         {
-            switch(timeSpanType)
+            TimeSpansEnum spanEnum = EnumExtensions.FromDescription<TimeSpansEnum>(timeSpanType);
+
+            switch (spanEnum)
             {
-                case TimeSpanConstants.FromMinutes:
+                case TimeSpansEnum.FromMinutes:
                     return TimeSpan.FromMinutes(timeAmount);
-                case TimeSpanConstants.FromHours:
+                case TimeSpansEnum.FromHours:
                     return TimeSpan.FromHours(timeAmount);
-                case TimeSpanConstants.FromDays:
+                case TimeSpansEnum.FromDays:
                     return TimeSpan.FromDays(timeAmount);
                  default:
                     return TimeSpan.Zero;
