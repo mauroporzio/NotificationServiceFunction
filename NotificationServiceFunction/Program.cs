@@ -11,12 +11,16 @@ var builder = FunctionsApplication.CreateBuilder(args);
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ITableStorageService, TableStorageService>();
 builder.Services.AddScoped<IRateLimitiBlobService, RateLimitiBlobService>();
+builder.Services.AddScoped<IRejectedNotificationQueueService, RejectedNotificationQueueService>();
 
 builder.Services.Configure<TableStorageSettings>(
     builder.Configuration.GetSection("NotificationEventsTable"));
 
 builder.Services.Configure<BlobStorageSettings>(
     builder.Configuration.GetSection("NotificationRateLimitsBlobStorage"));
+
+builder.Services.Configure<RejectedNotificationQueueSettings>(
+    builder.Configuration.GetSection("RejectedNotificationQueue"));
 
 builder.Services.Configure<QueuesOptions>(options =>
 {

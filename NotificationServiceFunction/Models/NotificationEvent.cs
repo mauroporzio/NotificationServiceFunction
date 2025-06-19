@@ -13,5 +13,10 @@ namespace NotificationServiceFunction.Models
 
         public ETag ETag { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
+
+        public override string ToString()
+        {
+            return $"PartitionKey: '{this.PartitionKey}', RowKey: '{this.RowKey}', NotificationType: '{this.NotificationType}', Content: '{this.Content}', Status: {this.Status}, ETag: {this.ETag}, Status: {this.Timestamp}";
+        }
     }
 }

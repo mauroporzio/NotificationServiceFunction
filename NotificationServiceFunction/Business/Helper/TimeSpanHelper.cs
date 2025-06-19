@@ -18,7 +18,7 @@ namespace NotificationServiceFunction.Business.Helper
                 case TimeSpansEnum.FromDays:
                     return TimeSpan.FromDays(timeAmount);
                  default:
-                    return TimeSpan.Zero;
+                    throw new Exception($"No matching TimeSpan handling found for type: '{timeSpanType}'.");
             }
         }
     }

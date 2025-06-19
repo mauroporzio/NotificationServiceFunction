@@ -24,12 +24,16 @@ namespace NotificationServiceFunction.Business
             try
             {
                 var result = await _notificationService.ProcessAsync(queueItem);
-                if (!result.IsValid)
+                if (result.IsValid)
+                    _logger.LogInformation($"Notification has been succesfully processed. '{queueItem.ToString()}'");
+                else
                     _logger.LogWarning(result.ErrorMessage);
+
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Processing failed: {ex.Message}");
+                throw; //Re throw exception to insert message into posion queue.
             }
         }
     }

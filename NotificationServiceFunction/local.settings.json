@@ -12,6 +12,10 @@
     // Blob Storage
     "NotificationRateLimitsBlobStorage__ConnectionString": "UseDevelopmentStorage=true",
     "NotificationRateLimitsBlobStorage__ContainerName": "notifications-function-configs",
-    "NotificationRateLimitsBlobStorage__BlobName": "notificationRateLimitsConfig.json"
+    "NotificationRateLimitsBlobStorage__BlobName": "notificationRateLimitsConfig.json",
+
+    //Queue Storage
+    "RejectedNotificationQueue__ConnectionString": "UseDevelopmentStorage=true",
+    "RejectedNotificationQueue__QueueName": "rejectednotificationsqueue"
   }
 }

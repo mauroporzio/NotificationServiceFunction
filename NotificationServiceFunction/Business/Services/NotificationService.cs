@@ -1,5 +1,4 @@
-﻿using Azure.Storage.Queues.Models;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NotificationServiceFunction.Business.Extensions;
 using NotificationServiceFunction.Business.Helper;
 using NotificationServiceFunction.Models;
@@ -12,16 +11,20 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
         private readonly ILogger<NotificationService> _logger;
         private readonly ITableStorageService _storage;
         private readonly IRateLimitiBlobService _blob;
+        private readonly IRejectedNotificationQueueService _rejectedNotificationQueueService;
 
-        public NotificationService(ILogger<NotificationService>  logger, ITableStorageService storage, IRateLimitiBlobService blob)
+        public NotificationService(ILogger<NotificationService>  logger, ITableStorageService storage, IRateLimitiBlobService blob, IRejectedNotificationQueueService rejectedNotificationQueueService)
         {
             _logger = logger;
             _storage = storage;
             _blob = blob;
+            _rejectedNotificationQueueService = rejectedNotificationQueueService;
         }
 
         public async Task<(bool IsValid, string? ErrorMessage)> ProcessAsync(NotificationQueueMessage queueMessage)
         {
+            (bool IsValid, string? ErrorMessage) result = (true, null);
+
             var notificationsRateLimits = await _blob.GetRulesAsync();
 
             var validationResult = ValidateQueueMessage(queueMessage, notificationsRateLimits);
@@ -39,27 +42,36 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
 
                 if (recent != null && recent.Count() >= limitInfo.RateLimit)
                 {
-                    var errorMessage = $"Rate limit exceeded for {queueMessage.Recipient} - {notificationType.GetDescription()}";
-                    _logger.LogError(errorMessage);
-                    return (false, errorMessage);
-                }
-
-                var ev = new NotificationEvent
+                    result = (false, $"Rate limit exceeded for {queueMessage.Recipient} - {notificationType.GetDescription()}");
+                } 
+                else
                 {
-                    PartitionKey = queueMessage.Recipient,
-                    RowKey = Guid.NewGuid().ToString(),
-                    NotificationType = notificationType.GetDescription(),
-                    Timestamp = currentTime,
-                    Content = queueMessage.Content,
-                    Status = (int)NotificationStatusEnum.Pending
-                };
+                    var ev = new NotificationEvent
+                    {
+                        PartitionKey = queueMessage.Recipient,
+                        RowKey = Guid.NewGuid().ToString(),
+                        NotificationType = notificationType.GetDescription(),
+                        Timestamp = currentTime,
+                        Content = queueMessage.Content,
+                        Status = (int)NotificationStatusEnum.Pending
+                    };
 
-                _logger.LogInformation($"Notification sent to {queueMessage.Recipient}: {queueMessage.Content}");
-                await _storage.StoreEventAsync(ev);
+                    await _storage.StoreEventAsync(ev);
 
-                return (true, null);
+                    _logger.LogInformation($"Notification inserted into NotificationEvents table: '{ev.ToString()}' ");
+
+                    result = (true, null);
+                }
             }
-            return (false, validationResult.ErrorMessage);
+            else
+            {
+                result = (false, validationResult.ErrorMessage);
+            }
+                
+            if(!result.IsValid)
+                await _rejectedNotificationQueueService.Enqueue(queueMessage, result.ErrorMessage);
+
+            return result;
         }
 
         private (bool IsValid, string ErrorMessage) ValidateQueueMessage(NotificationQueueMessage queueMessage, List<NotificationRateLimit>? notificationsRateLimits)
@@ -80,6 +92,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
             }
             catch (Exception ex)
             {
+                isValid = false;
                 errorMessage = ex.Message;
             }
 
@@ -89,7 +102,7 @@ namespace NotificationServiceFunction.Business.Services.Interfaces
         private NotificationRateLimit GetNotificationRateLimit(List<NotificationRateLimit>? notificationsRateLimits, string notificationType)
         {
             return notificationsRateLimits?.FirstOrDefault(x => x.NotificationType == notificationType) ??
-                   throw new Exception($"No matching timeSpan configuration found for notifitcation type: '{notificationType}', nameof(description)");
+                   throw new Exception($"No matching timeSpan configuration found for notifitcation type: '{notificationType}'");
         }
     }
 }
