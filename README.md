@@ -6,6 +6,8 @@ This project is a **.NET 8.0 Azure Function** that implements a **rate-limited e
 
 Notifications are processed, validated, and routed based on their compliance with configured rate limits. Messages that exceed limits or encounter errors are redirected to appropriate Azure Storage Queues.
 
+[Challenge guidelines](https://github.com/mauroporzio/NotificationServiceFunction/blob/master/Docs/Challange.pdf)
+
 ---
 
 ## 🔧 Technologies Used
@@ -128,4 +130,3 @@ Note: This JSON file contains example configurations for rate limit validations.
 - [Project Repository](https://github.com/mauroporzio/NotificationServiceFunction)
 - [Visual Studio](https://visualstudio.microsoft.com)
 - [Azure Storage Explorer](https://azure.microsoft.com/es-es/products/storage/storage-explorer)
-- [Challange](https://github.com/mauroporzio/NotificationServiceFunction/blob/master/Challenge.pdf)
