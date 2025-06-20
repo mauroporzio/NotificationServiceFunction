@@ -32,6 +32,8 @@ Each recipient is rate-limited based on the type of notification:
 
 ## 📂 Architecture
 
+![NotificationService_Challange](https://github.com/user-attachments/assets/dc76648e-944c-48ce-8766-1fec22e093cf)
+
 ### Queues
 
 - **notificationsqueue**: Incoming notification messages.
