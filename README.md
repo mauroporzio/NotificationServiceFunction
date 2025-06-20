@@ -128,4 +128,4 @@ Note: This JSON file contains example configurations for rate limit validations.
 - [Project Repository](https://github.com/mauroporzio/NotificationServiceFunction)
 - [Visual Studio](https://visualstudio.microsoft.com)
 - [Azure Storage Explorer](https://azure.microsoft.com/es-es/products/storage/storage-explorer)
-- [Challenge](https://github.com/mauroporzio/NotificationServiceFunction/blob/master/Challenge.pdf)
+- [Challange](https://github.com/mauroporzio/NotificationServiceFunction/blob/master/Challenge.pdf)
