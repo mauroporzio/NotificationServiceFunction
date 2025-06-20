@@ -129,6 +129,7 @@ Note: This JSON file contains example configurations for rate limit validations.
 
 - The actual sending of notifications is handled by a **hypothetical Notification Sender API** (not included).
 - This project focuses solely on **validation and routing logic** based on rate limits.
+- All development and testing was done with windows 10 and 11 PRO.
 
 ---
 
