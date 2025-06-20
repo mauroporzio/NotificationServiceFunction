@@ -74,7 +74,7 @@ git clone https://github.com/mauroporzio/NotificationServiceFunction.git
 
 ### 4. Configure Blob Storage
 
-In Azure Storage Explorer:
+In Azure Storage Explorer's Emulator section:
 
 1. Add a new **Blob Container** named `notifications-function-configs`.
 2. Upload the config file located at:  
@@ -83,7 +83,14 @@ In Azure Storage Explorer:
 
 Note: This JSON file contains example configurations for rate limit validations. Feel free to experiment with other values, but keep in mind that the notificationType must exist in NotificationTypesEnum.cs.
 
-### 5. Final Structure
+### 5. Configure Queue Storage
+
+In Azure Storage Explorer's Emulator section:
+
+1. Add a new **Queue** named `notificationsqueue`.
+2. Add another new **Queue** named `notificationspoisonqueue`.
+
+### 6. Final Structure
 
 Your local Azure Storage should now include:
 
